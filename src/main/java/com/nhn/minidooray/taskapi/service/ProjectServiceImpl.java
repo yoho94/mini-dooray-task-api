@@ -16,10 +16,10 @@ import com.nhn.minidooray.taskapi.repository.ProjectRepository;
 import com.nhn.minidooray.taskapi.repository.ProjectStateRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service("projectService")
 @Transactional(readOnly = true)
@@ -85,9 +85,15 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
 
-
     @Override
-    public List<ProjectByAccountResponse> getProjectsByAccount(String accountId) {
-        return null;
+    public Page<ProjectByAccountResponse> getProjectsByAccount(String accountId, Pageable pageable) {
+        Page<ProjectAccountEntity> page = projectAccountRepository.findAllByPk_AccountId(accountId, pageable);
+
+        return page.map(entity -> ProjectByAccountResponse.builder()
+                .accountId(accountId)
+                .projectId(entity.getProjectEntity().getId())
+                .projectName(entity.getProjectEntity().getName())
+                .projectStateCode(entity.getAuthorityEntity().getCode())
+                .build());
     }
 }
