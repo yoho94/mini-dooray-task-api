@@ -2,6 +2,7 @@ package com.nhn.minidooray.taskapi.service;
 
 import com.nhn.minidooray.taskapi.domain.request.TaskCreateRequest;
 import com.nhn.minidooray.taskapi.domain.request.TaskUpdateRequest;
+import com.nhn.minidooray.taskapi.domain.response.TaskResponse;
 import com.nhn.minidooray.taskapi.domain.response.TasksResponse;
 import com.nhn.minidooray.taskapi.entity.MilestoneEntity;
 import com.nhn.minidooray.taskapi.entity.ProjectAccountEntity;
@@ -44,7 +45,7 @@ public class TaskServiceImpl implements TaskService {
                         .accountId(taskCreateRequest.getWriterId()).build())
                 .orElseThrow(() -> new NotFoundException("projectAccount"));
 
-        return taskRepository.save(TaskEntity.builder().title(taskCreateRequest.getName())
+        return taskRepository.save(TaskEntity.builder().title(taskCreateRequest.getTitle())
                 .writerId(taskCreateRequest.getWriterId())
                 .projectEntity(projectEntity)
                 .milestoneEntity(milestoneEntity)
@@ -68,7 +69,7 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new NotFoundException("projectAccount"));
 
 
-        taskEntity.update(taskUpdateRequest.getName(), projectEntity, taskUpdateRequest.getWriterId(), milestoneEntity);
+        taskEntity.update(taskUpdateRequest.getTitle(), projectEntity, taskUpdateRequest.getWriterId(), milestoneEntity);
         return taskRepository.save(taskEntity).getId();
     }
 
@@ -83,5 +84,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Page<TasksResponse> getTasks(Long projectId, Pageable pageable) {
         return taskRepository.findAllByProjectEntity_Id(projectId, pageable);
+    }
+
+    @Override
+    public TaskResponse getTask(Long taskId) {
+        return taskRepository.findTaskResponseById(taskId)
+                .orElseThrow(() -> new NotFoundException("task"));
     }
 }

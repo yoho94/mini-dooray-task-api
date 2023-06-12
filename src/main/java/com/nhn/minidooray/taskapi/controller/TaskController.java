@@ -5,6 +5,7 @@ import com.nhn.minidooray.taskapi.domain.request.TaskCreateRequest;
 import com.nhn.minidooray.taskapi.domain.request.TaskUpdateRequest;
 import com.nhn.minidooray.taskapi.domain.response.CommonResponse;
 import com.nhn.minidooray.taskapi.domain.response.ResultResponse;
+import com.nhn.minidooray.taskapi.domain.response.TaskResponse;
 import com.nhn.minidooray.taskapi.domain.response.TasksResponse;
 import com.nhn.minidooray.taskapi.exception.ValidationFailedException;
 import com.nhn.minidooray.taskapi.service.TaskService;
@@ -28,6 +29,13 @@ public class TaskController {
         Page<TasksResponse> tasks = taskService.getTasks(projectId, pageable);
 
         return ResultResponse.fetched(List.of(tasks));
+    }
+
+    @GetMapping("${com.nhn.minidooray.taskapi.requestmapping.get-task}")
+    public ResultResponse<TaskResponse> getTask(@PathVariable("projectId") Long projectId, @PathVariable("taskId") Long taskId) {
+        TaskResponse task = taskService.getTask(taskId);
+
+        return ResultResponse.fetched(List.of(task));
     }
 
     @PostMapping("${com.nhn.minidooray.taskapi.requestmapping.create-task}")
