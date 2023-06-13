@@ -191,7 +191,25 @@ public class TaskServiceImplTest {
 
     }
     @Test
-    void deleteTaskTest_notFound() {
+    void deleteTaskTest_o() {
+        // Given
+        Long taskId = 1L;
+        TaskEntity taskEntity = TaskEntity.builder().title("Test Task").build();
+
+        // When
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(taskEntity));
+        doNothing().when(taskRepository).delete(taskEntity);
+
+        // Act
+        taskService.deleteTask(taskId);
+
+        // Then
+        verify(taskRepository, times(1)).findById(taskId);
+        verify(taskRepository, times(1)).delete(taskEntity);
+    }
+
+    @Test
+    void deleteTaskTest_x() {
         // Given
         Long taskId = 1L;
 
@@ -202,7 +220,7 @@ public class TaskServiceImplTest {
         assertThrows(NotFoundException.class, () -> taskService.deleteTask(taskId));
     }
     @Test
-    void getTasksTest() {
+    void getTasksTest_o() {
         // Given
         Long projectId = 1L;
         Pageable pageable = PageRequest.of(0, 5); // 1st page with 5 items
