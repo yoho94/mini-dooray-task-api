@@ -4,20 +4,17 @@ import com.nhn.minidooray.taskapi.domain.request.TaskCreateRequest;
 import com.nhn.minidooray.taskapi.domain.request.TaskUpdateRequest;
 import com.nhn.minidooray.taskapi.domain.response.TaskResponse;
 import com.nhn.minidooray.taskapi.domain.response.TasksResponse;
-import com.nhn.minidooray.taskapi.entity.MilestoneEntity;
-import com.nhn.minidooray.taskapi.entity.ProjectAccountEntity;
-import com.nhn.minidooray.taskapi.entity.ProjectEntity;
-import com.nhn.minidooray.taskapi.entity.TaskEntity;
+import com.nhn.minidooray.taskapi.entity.*;
 import com.nhn.minidooray.taskapi.exception.NotFoundException;
-import com.nhn.minidooray.taskapi.repository.MilestoneRepository;
-import com.nhn.minidooray.taskapi.repository.ProjectAccountRepository;
-import com.nhn.minidooray.taskapi.repository.ProjectRepository;
-import com.nhn.minidooray.taskapi.repository.TaskRepository;
+import com.nhn.minidooray.taskapi.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class TaskServiceImpl implements TaskService {
     private final ProjectRepository projectRepository;
     private final TaskRepository taskRepository;
+    private final TaskTagRepository taskTagRepository;
     private final ProjectAccountRepository projectAccountRepository;
     private final MilestoneRepository milestoneRepository;
+    private final TagRepository tagRepository;
 
     @Override
     @Transactional
@@ -45,12 +44,39 @@ public class TaskServiceImpl implements TaskService {
                         .accountId(taskCreateRequest.getWriterId()).build())
                 .orElseThrow(() -> new NotFoundException("projectAccount"));
 
-        return taskRepository.save(TaskEntity.builder().title(taskCreateRequest.getTitle())
+        TaskEntity task = TaskEntity.builder().title(taskCreateRequest.getTitle())
                 .writerId(taskCreateRequest.getWriterId())
                 .projectEntity(projectEntity)
                 .milestoneEntity(milestoneEntity)
                 .content(taskCreateRequest.getContent())
-                .build()).getId();
+                .build();
+
+        // tagName 리스트를 저장
+        List<TaskTagEntity> taskTagEntityList = new ArrayList<>();
+
+        for (String name : taskCreateRequest.getTagNameList()) {
+            TagEntity tagEntity = tagRepository.findByProjectEntity_IdAndName(taskCreateRequest.getProjectId(), name)
+                    .orElseGet(() -> TagEntity.builder()
+                            .name(name)
+                            .projectEntity(projectEntity)
+                            .build());
+
+            // tag에 없으면 새로 만든다.
+            // 있으면 있는 TAG를 추가한다.
+            taskTagEntityList.add(TaskTagEntity.builder()
+                    .taskEntity(task)
+                    .tagEntity(tagEntity)
+                    .pk(TaskTagEntity.Pk.builder()
+                            .taskId(task.getId())
+                            .tagId(tagEntity.getId())
+                            .build())
+                    .build());
+        }
+
+        task.setTaskTagEntities(taskTagEntityList);
+
+        return taskRepository.save(task)
+                .getId();
     }
 
     @Override
@@ -73,6 +99,29 @@ public class TaskServiceImpl implements TaskService {
                         .accountId(taskUpdateRequest.getWriterId()).build())
                 .orElseThrow(() -> new NotFoundException("projectAccount"));
 
+        // tagName 리스트를 저장
+        List<TaskTagEntity> taskTagEntityList = new ArrayList<>();
+
+        for (String name : taskUpdateRequest.getTagNameList()) {
+            TagEntity tagEntity = tagRepository.findByProjectEntity_IdAndName(taskUpdateRequest.getProjectId(), name)
+                    .orElseGet(() -> tagRepository.save(TagEntity.builder()
+                            .name(name)
+                            .projectEntity(projectEntity)
+                            .build()));
+
+            // tag에 없으면 새로 만든다.
+            // 있으면 있는 TAG를 추가한다.
+            taskTagEntityList.add(TaskTagEntity.builder()
+                    .taskEntity(taskEntity)
+                    .tagEntity(tagEntity)
+                    .pk(TaskTagEntity.Pk.builder()
+                            .taskId(taskEntity.getId())
+                            .tagId(tagEntity.getId())
+                            .build())
+                    .build());
+        }
+        taskEntity.getTaskTagEntities().clear();
+        taskEntity.getTaskTagEntities().addAll(taskTagEntityList);
 
         taskEntity.update(taskUpdateRequest.getTitle(), projectEntity, taskUpdateRequest.getWriterId(), milestoneEntity);
         taskEntity.setContent(taskUpdateRequest.getContent());

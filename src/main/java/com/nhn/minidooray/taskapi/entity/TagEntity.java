@@ -24,6 +24,7 @@ public class TagEntity implements Updatable<TagUpdateRequest> {
 
     private String name;
 
+    @Column(updatable = false)
     private LocalDateTime createAt;
 
     @OneToMany(mappedBy = "tagEntity", cascade = CascadeType.REMOVE)
