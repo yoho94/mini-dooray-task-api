@@ -49,6 +49,7 @@ public class TaskServiceImpl implements TaskService {
                 .writerId(taskCreateRequest.getWriterId())
                 .projectEntity(projectEntity)
                 .milestoneEntity(milestoneEntity)
+                .content(taskCreateRequest.getContent())
                 .build()).getId();
     }
 
@@ -59,8 +60,12 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new NotFoundException("task"));
         ProjectEntity projectEntity = projectRepository.findById(taskUpdateRequest.getProjectId())
                 .orElseThrow(() -> new NotFoundException("project"));
-        MilestoneEntity milestoneEntity = milestoneRepository.findById(taskUpdateRequest.getMilestoneId())
-                .orElseThrow(() -> new NotFoundException("milestone"));
+        MilestoneEntity milestoneEntity = null;
+
+        if (taskUpdateRequest.getMilestoneId() != null) {
+            milestoneEntity = milestoneRepository.findById(taskUpdateRequest.getMilestoneId())
+                    .orElseThrow(() -> new NotFoundException("milestone"));
+        }
 
         //프로젝트에 속한 회원으로의 변경인지 검사
         projectAccountRepository.findByPk(ProjectAccountEntity.Pk.builder()
@@ -70,6 +75,7 @@ public class TaskServiceImpl implements TaskService {
 
 
         taskEntity.update(taskUpdateRequest.getTitle(), projectEntity, taskUpdateRequest.getWriterId(), milestoneEntity);
+        taskEntity.setContent(taskUpdateRequest.getContent());
         return taskRepository.save(taskEntity).getId();
     }
 

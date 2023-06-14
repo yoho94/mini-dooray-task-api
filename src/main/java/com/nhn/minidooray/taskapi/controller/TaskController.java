@@ -45,6 +45,9 @@ public class TaskController {
         if (bindingResult.hasErrors()) {
             throw new ValidationFailedException(bindingResult);
         }
+        // TODO tagName 리스트를 저장..
+        //      name이 이 프로젝트 태그에 있는지 확인하여 생성하거나 그냥 있으면 기존껄 등록하거나 ...
+
         Long taskId = taskService.createTask(taskCreateRequest);
         return ResultResponse.created(List.of(CommonResponse.builder().id(taskId).build()));
     }

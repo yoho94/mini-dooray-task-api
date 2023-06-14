@@ -43,17 +43,18 @@ public class TaskEntity {
     }
 
     @Builder
-    public TaskEntity(String title, ProjectEntity projectEntity, String writerId, MilestoneEntity milestoneEntity) {
+    public TaskEntity(String title, ProjectEntity projectEntity, String writerId, MilestoneEntity milestoneEntity, String content) {
         this.title = title;
         this.projectEntity = projectEntity;
         this.writerId = writerId;
         this.milestoneEntity = milestoneEntity;
+        this.content = content;
     }
 
     public void update(String title, ProjectEntity projectEntity, String writerId, MilestoneEntity milestoneEntity) {
         this.title = title == null ? this.title : title;
         this.projectEntity = projectEntity == null ? this.projectEntity : projectEntity;
         this.writerId = writerId == null ? this.writerId : writerId;
-        this.milestoneEntity = milestoneEntity == null ? this.milestoneEntity : milestoneEntity;
+        this.milestoneEntity = milestoneEntity;
     }
 }
