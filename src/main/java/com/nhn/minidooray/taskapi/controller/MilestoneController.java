@@ -63,4 +63,11 @@ public class MilestoneController {
         Page<MilestoneByProjectResponse> milestoneByProjectResponses = milestoneService.findMilestonesByProject(projectId, pageable);
         return ResultResponse.fetched(List.of(milestoneByProjectResponses));
     }
+
+    @GetMapping("/projects/{projectId}/getAllMileStones")
+    public ResultResponse<MilestoneByProjectResponse> getAllMileStonesByProject(
+            @PathVariable("projectId") Long projectId) {
+        Page<MilestoneByProjectResponse> milestoneByProjectResponses = milestoneService.findMilestonesByProject(projectId, Pageable.ofSize(10000));
+        return ResultResponse.fetched(milestoneByProjectResponses.getContent());
+    }
 }

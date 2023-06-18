@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "task")
@@ -32,10 +33,11 @@ public class TaskEntity {
     @JoinColumn(name = "mile_stone_id")
     private MilestoneEntity milestoneEntity;
 
+    @Column(updatable = false)
     private LocalDateTime createAt;
 
-    @OneToMany(mappedBy = "taskEntity", cascade = CascadeType.REMOVE)
-    private List<TaskTagEntity> taskTagEntities;
+    @OneToMany(mappedBy = "taskEntity", cascade = {CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<TaskTagEntity> taskTagEntities = new ArrayList<>();
 
     @PrePersist
     public void setCreateAt() {
@@ -43,18 +45,20 @@ public class TaskEntity {
     }
 
     @Builder
-    public TaskEntity(Long id, String title, ProjectEntity projectEntity, String writerId, MilestoneEntity milestoneEntity) {
+    public TaskEntity(Long id, String title, ProjectEntity projectEntity, String writerId, MilestoneEntity milestoneEntity, String content, List<TaskTagEntity> taskTagEntities) {
         this.id = id;
         this.title = title;
         this.projectEntity = projectEntity;
         this.writerId = writerId;
         this.milestoneEntity = milestoneEntity;
+        this.content = content;
+        this.taskTagEntities = taskTagEntities;
     }
 
     public void update(String title, ProjectEntity projectEntity, String writerId, MilestoneEntity milestoneEntity) {
         this.title = title == null ? this.title : title;
         this.projectEntity = projectEntity == null ? this.projectEntity : projectEntity;
         this.writerId = writerId == null ? this.writerId : writerId;
-        this.milestoneEntity = milestoneEntity == null ? this.milestoneEntity : milestoneEntity;
+        this.milestoneEntity = milestoneEntity;
     }
 }

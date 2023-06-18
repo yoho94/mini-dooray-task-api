@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@EqualsAndHashCode(of = "pk")
 public class TaskTagEntity {
     @EmbeddedId
     private Pk pk;
@@ -21,10 +22,11 @@ public class TaskTagEntity {
     private TaskEntity taskEntity;
 
     @MapsId("tagId")
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "tag_id")
     private TagEntity tagEntity;
 
+    @Column(updatable = false)
     private LocalDateTime createAt;
 
     @PrePersist
