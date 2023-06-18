@@ -1,0 +1,179 @@
+### 프로젝트 생성
+POST /project-api/projects HTTP/1.1
+Host: localhost:8081
+Content-Type: application/json
+
+{
+  "accountId": "tester20",
+  "projectName": "test project20"
+}
+
+### 프로젝트 수정
+PUT /project-api/projects/1 HTTP/1.1
+Host: localhost:8081
+Content-Type: application/json
+
+{
+  "projectId": 2,
+  "projectName": "test project2",
+  "projectStateCode": "02"
+}
+
+### 프로젝트 삭제
+DELETE /project-api/projects/2 HTTP/1.1
+Host: localhost:8081
+
+### 프로젝트에 계정 추가
+POST /project-api/projects/5/accounts HTTP/1.1
+Host: localhost:8081
+Content-Type: application/json
+
+{
+  "accountId": "tester1",
+  "authorityCode": "02"
+}
+
+### 프로젝트의 계정 수정
+PUT /project-api/projects/4/accounts/tester2 HTTP/1.1
+Host: localhost:8081
+Content-Type: application/json
+
+{
+  "authorityCode": "02"
+}
+
+### 프로젝트의 계정 삭제
+DELETE /project-api/projects/4/accounts/tester2 HTTP/1.1
+Host: localhost:8081
+
+### 계정의 모든 프로젝트 조회
+GET /project-api/accounts/tester1/projects HTTP/1.1
+Host: localhost:8081
+
+### 프로젝트의 모든 계정 조회 (권한 포함)
+GET /project-api/projects/4/accounts HTTP/1.1
+Host: localhost:8081
+
+### 프로젝트에 마일스톤 추가
+POST /project-api/projects/4/milestones HTTP/1.1
+Host: localhost:8081
+Content-Type: application/json
+
+{
+  "name": "test milestone1",
+  "startDate": "2021-01-01",
+  "endDate": "2021-01-31"
+}
+
+### 마일스톤 수정
+PUT /project-api/projects/4/milestones/1 HTTP/1.1
+Host: localhost:8081
+Content-Type: application/json
+
+{
+  "name": "test milestone1",
+  "startDate": "2021-01-02",
+  "endDate": "2021-02-02"
+}
+
+### 마일스톤 삭제
+DELETE /project-api/projects/4/milestones/1 HTTP/1.1
+Host: localhost:8081
+
+### 프로젝트의 마일스톤 조회
+GET /project-api/projects/4/milestones HTTP/1.1
+Host: localhost:8081
+
+### 태그 생성
+POST /project-api/projects/4/tags HTTP/1.1
+Host: localhost:8081
+Content-Type: application/json
+
+{
+  "name": "test tag1"
+}
+
+### 태그 수정
+PUT /project-api/projects/4/tags/1 HTTP/1.1
+Host: localhost:8081
+Content-Type: application/json
+
+{
+  "name": "test tag3"
+}
+
+### 태그 삭제
+DELETE /project-api/projects/4/tags/1 HTTP/1.1
+Host: localhost:8081
+
+### 프로젝트의 태그 조회
+GET /project-api/projects/4/tags HTTP/1.1
+Host: localhost:8081
+
+### 태스크의 태그 조회
+GET /project-api/projects/4/tasks/3/tags HTTP/1.1
+Host: localhost:8081
+
+### 태스크 생성
+POST /project-api/projects/4/tasks HTTP/1.1
+Host: localhost:8081
+Content-Type: application/json
+
+{
+  "name": "test task1",
+  "projectId": 4,
+  "writerId": "tester1",
+  "milestoneId": 1
+}
+
+### 태스크 수정
+PUT /project-api/projects/4/tasks/2 HTTP/1.1
+Host: localhost:8081
+Content-Type: application/json
+
+{
+  "name": "test task1",
+  "projectId": 4,
+  "writerId": "testerX",
+  "milestoneId": 1
+}
+
+### 태스크 삭제
+DELETE /project-api/projects/4/tasks/2 HTTP/1.1
+Host: localhost:8081
+
+### 태스크에 태그 걸기
+POST /project-api/projects/4/tasks/3/tags/1 HTTP/1.1
+Host: localhost:8081
+
+### 태스크에 걸린 태그 제거
+DELETE /project-api/projects/4/tasks/3/tags/1 HTTP/1.1
+Host: localhost:8081
+
+### 코멘트 생성
+POST /project-api/projects/4/tasks/3/comments HTTP/1.1
+Host: localhost:8081
+Content-Type: application/json
+
+{
+  "parentId": 5,
+  "writerId": "tester1",
+  "content": "test comment14"
+}
+
+### 코멘트 수정
+PUT /project-api/projects/4/tasks/3/comments/4 HTTP/1.1
+Host: localhost:8081
+Content-Type: application/json
+
+{
+  "content": "test comment2"
+}
+
+### 코멘트 삭제
+DELETE /project-api/projects/4/tasks/3/comments/4 HTTP/1.1
+Host: localhost:8081
+
+### 코멘트 조회
+GET /project-api/projects/4/tasks/3/comments HTTP/1.1
+Host: localhost:8081
