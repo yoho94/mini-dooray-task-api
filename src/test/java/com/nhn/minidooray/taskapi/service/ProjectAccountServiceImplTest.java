@@ -4,7 +4,6 @@ import com.nhn.minidooray.taskapi.domain.request.ProjectAccountCreateRequest;
 import com.nhn.minidooray.taskapi.domain.request.ProjectAccountUpdateRequest;
 import com.nhn.minidooray.taskapi.domain.response.AccountByProjectResponse;
 import com.nhn.minidooray.taskapi.domain.response.ProjectAccountResponse;
-import com.nhn.minidooray.taskapi.domain.response.ProjectByAccountResponse;
 import com.nhn.minidooray.taskapi.entity.AuthorityEntity;
 import com.nhn.minidooray.taskapi.entity.ProjectAccountEntity;
 import com.nhn.minidooray.taskapi.entity.ProjectEntity;
@@ -29,12 +28,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -203,24 +200,6 @@ class ProjectAccountServiceImplTest {
                 .authorityType(AuthorityType.관리자)
                 .createAt(LocalDateTime.now())
                 .build()));
-
-        when(projectAccountRepository.save(Mockito.any(ProjectAccountEntity.class))).thenReturn(ProjectAccountEntity.builder()
-                .pk(ProjectAccountEntity.Pk.builder()
-                        .projectId(1L)
-                        .accountId("test member")
-                        .build())
-                .projectEntity(ProjectEntity.builder()
-                        .projectStateEntity(ProjectStateEntity.builder().projectStateType(ProjectStateType.활성).build())
-                        .name("test project")
-                        .id(1L)
-                        .createAt(LocalDateTime.now())
-                        .build())
-                .authorityEntity(AuthorityEntity.builder()
-                        .code(AuthorityType.codeOf(AuthorityType.관리자))
-                        .authorityType(AuthorityType.관리자)
-                        .createAt(LocalDateTime.now())
-                        .build())
-                .build());
 
         assertDoesNotThrow(() -> projectAccountService.updateProjectAccount(1L, "test member", ProjectAccountUpdateRequest.builder()
                 .authorityCode(AuthorityType.codeOf(AuthorityType.관리자))

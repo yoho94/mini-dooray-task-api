@@ -10,23 +10,18 @@ import com.nhn.minidooray.taskapi.entity.ProjectStateEntity;
 import com.nhn.minidooray.taskapi.enumerate.AuthorityType;
 import com.nhn.minidooray.taskapi.enumerate.ProjectStateType;
 import com.nhn.minidooray.taskapi.exception.NotFoundException;
-import com.nhn.minidooray.taskapi.exception.ValidationFailedException;
 import com.nhn.minidooray.taskapi.repository.AuthorityRepository;
 import com.nhn.minidooray.taskapi.repository.ProjectAccountRepository;
 import com.nhn.minidooray.taskapi.repository.ProjectRepository;
 import com.nhn.minidooray.taskapi.repository.ProjectStateRepository;
-import net.bytebuddy.asm.Advice;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -36,9 +31,9 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ProjectServiceImplTest {
@@ -160,10 +155,7 @@ class ProjectServiceImplTest {
                         ProjectStateEntity.builder()
                                 .projectStateType(ProjectStateType.활성)
                                 .build()));
-        when(projectRepository.save(Mockito.any()))
-                .thenReturn(ProjectEntity.builder()
-                        .id(1L)
-                        .build());
+
         // when
         Long actual = projectService.updateProject(1L, projectUpdateRequest);
         // then
